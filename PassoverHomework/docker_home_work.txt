@@ -1,0 +1,87 @@
+NETWORK
+
+--------- Page 99 ---------
+
+docker run -it alpine /bin/sh
+docker run -it alpine /bin/sh
+docker inspect jolly_feynman
+docker inspect pensive_feistel
+docker exec -it jolly_feynman sh
+ping Vaiolabs.io
+ping 172.17.0.3
+ping eeb9c6f39b67 # fail
+
+
+--------- Page 101 ---------
+
+docker network create alpine-net
+docker run -dit --name apline1 --network alpine-net alpine
+docker run -dit --name apline2 --network alpine-net alpine
+docker run -dit --name apline3 --network br01 alpine
+docker inspect apline1
+docker inspect apline2
+docker inspect apline3
+docker exec -it apline1 sh
+ping 172.20.0.3
+ping 172.18.0.2
+ping 2767b41f5f20
+docker rm -f $(docker ps -aq)
+docker network ls
+docker network remove br01
+docker network remove br02
+docker network remove alpine-net
+
+
+--------- Page 104 - 108 ---------
+
+docker network create --subnet 192.168.1.0/24 --gateway 192.168.1.1 docker-net
+docker run -dit --network docker-net alpine /bin/sh
+docker ps
+docker inspect 6d3b58ed9101
+docker kill 6d3b58ed9101
+docker network rm docker-net
+
+
+--------- Page 110 - 115 ---------
+
+docker run -d -p 80 ubuntu/apache2
+docker run -d -p 8080:80 ubuntu/apache2
+docker network create lamp-net
+docker run -d --network lamp-net -p 8080:80 ubuntu/apache2
+docker run -d --network lamp-net -p 3306:3306 mysql
+docker inspect 5d543facf798 |grep 3306
+
+
+--------- Page 117 ---------
+
+docker rm -f $(docker ps -aq)
+docker rmi -f $(docker images -aq)
+docker network create vaio-net
+docker run -dit --network vaio-net alpine
+docker run -dit --network vaio-net nginx
+docker run -dit ubuntu/apache2
+docker ps 
+docker inspect 4ef148a44f20
+docker inspect 16c1de921b7e
+docker exec -it 16c1de921b7e sh
+ping 172.19.0.2
+docker rm -f $(docker ps -aq)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

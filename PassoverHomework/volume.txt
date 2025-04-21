@@ -1,0 +1,105 @@
+--------- Page 139 ---------
+
+docker volume create mysql-data
+docker run -dit -v mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=zubur1 mysql
+docker ps
+docker kill 4cad24a99bca
+docker run -dit -v mysql-data:/storage -e MYSQL_ROOT_PASSWORD=zubur1 mysql
+docker exec -it fe221b8c6cb7 sh -c 'ls /storage'
+
+            **** Dockerfils *****
+
+
+--------- Page 151 ---------
+
+mkdir alpine-env
+cd alpine-env
+vim Dockerfile:
+------------
+
+FROM alpine:latest
+RUN apk update && apk add vim git curl
+
+------------
+
+docker build -t my-first-alpine:v1 .
+docker run -dit my-first-alpine:v1
+
+
+--------- Page 155 ---------
+
+vim Dockerfile:
+------------
+
+FROM alpine:latest
+ARG USER
+ENV TZ=America/Chicago
+ENV USER=${USER}
+RUN apk update && apk add vim git curl nginx
+CMD nginx -g daemon off;
+
+--------------
+
+docker build -t my-alpine-nginx:v1 --build-arg USER=ninja .
+docker run -dit my-alpine-nginx:v1
+
+--------- Page 155 ---------
+
+FROM ubuntu:18.04
+
+LABEL maintainer="shay@example.com"
+LABEL version="1.0"
+LABEL description="Custom LAMP image with nginx, php-fpm, and supervisor"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y nginx php-fpm supervisor && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY index.html /usr/share/nginx/html/index.html
+
+EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
+--------- Page 165 - 166 ---------
+
+mkdir py-webserver
+cd py-webserver
+vim py-web-server.py:
+--------------
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+
+def run(server_class=HTTPServer, handler_class=SimpleHTTPRequestHandler):
+ 	"""Entrypoint for python server"""
+ 	server_address = ("0.0.0.0", 8000)
+ 	httpd = server_class(server_address, handler_class)
+ 	print("Staring web-server...")
+ 	httpd.serve_forever()
+
+if __name__ == "__main__":
+ run()
+
+--------------
+
+vim Dockerfile
+--------------
+
+FROM python:3.9
+RUN useradd -m -d /home/app_user -s /bin/bash app_user
+USER app_user
+WORKDIR /home/app_user
+EXPOSE 8000
+COPY py-web-server.py /home/app_user/app.py
+CMD ["python3", "/home/app_user/app.py" ]
+
+------------
+docker build -t py-web-server:0.0.1 .
+docker run -d -p 8000:8000 py-web-server:0.0.1
+docker inspect 4cad24a99bca 
+curl localhost:8000
+docker logs 4cad24a99bca
+
+
+
+
